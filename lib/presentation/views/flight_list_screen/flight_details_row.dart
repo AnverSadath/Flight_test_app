@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 class FlightDetailRow extends StatelessWidget {
   final String airlineIcon;
+  final String airlineName;
+  final String flightNumber;
   final String departureTime;
   final String departureCode;
   final String stopCode;
@@ -12,6 +15,8 @@ class FlightDetailRow extends StatelessWidget {
   const FlightDetailRow({
     super.key,
     required this.airlineIcon,
+    required this.airlineName,
+    required this.flightNumber,
     required this.departureTime,
     required this.departureCode,
     required this.stopCode,
@@ -26,7 +31,41 @@ class FlightDetailRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         // AIRLINE ICON
-        Image.asset(airlineIcon),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SvgPicture.network(
+              airlineIcon,
+              width: 35,
+              height: 35,
+              placeholderBuilder: (context) => const SizedBox(
+                width: 35,
+                height: 35,
+                child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+              ),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              airlineName,
+              style: const TextStyle(
+                fontSize: 8,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF474747),
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            Text(
+              flightNumber,
+              style: const TextStyle(
+                fontSize: 8,
+                fontWeight: FontWeight.w400,
+                color: Color(0xFF474747),
+              ),
+            ),
+          ],
+        ),
 
         // DEPARTURE
         Column(

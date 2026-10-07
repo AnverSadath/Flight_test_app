@@ -1,7 +1,9 @@
 import 'package:flight_test_app/presentation/views/flight_list_screen/filter_bottomsheet.dart';
 import 'package:flight_test_app/presentation/views/flight_list_screen/flight_card.dart';
 import 'package:flight_test_app/presentation/views/flight_list_screen/sort_bottom_sheet.dart';
+import 'package:flight_test_app/presentation/views/providers/flight_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FlightListScreen extends StatefulWidget {
   const FlightListScreen({super.key});
@@ -11,6 +13,15 @@ class FlightListScreen extends StatefulWidget {
 }
 
 class _FlightListScreenState extends State<FlightListScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<FlightProvider>().getFlights();
+    });
+  }
+
   void _showFilterBottomSheet() {
     showModalBottomSheet(
       context: context,
@@ -32,14 +43,24 @@ class _FlightListScreenState extends State<FlightListScreen> {
     );
   }
 
-  final List<String> airlineIcons = [
-    "assets/images/jazeera_icon.png",
-    "assets/images/flydubai_icon.png",
-    "assets/images/qatar_icon.png",
-    "assets/images/jazeera_icon.png",
-    "assets/images/flydubai_icon.png",
-    "assets/images/qatar_icon.png",
-  ];
+  String _monthName(int month) {
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+
+    return months[month - 1];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -124,118 +145,161 @@ class _FlightListScreenState extends State<FlightListScreen> {
         backgroundColor: const Color(0xFF0862A4),
         toolbarHeight: height * 0.150,
         centerTitle: true,
-        title: Column(
-          children: [
-            SizedBox(height: height * 0.02),
+        title: Consumer<FlightProvider>(
+          builder: (context, provider, child) {
+            if (provider.flights.isEmpty) {
+              return const SizedBox.shrink();
+            }
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            final flight = provider.flights.first;
+
+            final outboundJourney = flight.flightJourneys[0];
+            final outboundItem = outboundJourney.flightItems.first;
+
+            final departureCode = outboundItem.departure.airportCode;
+            final arrivalCode = outboundItem.arrival.airportCode;
+
+            final departureDate = DateTime.tryParse(
+              outboundItem.departure.dateTime,
+            );
+
+            final dateText = departureDate != null
+                ? '${departureDate.day} ${_monthName(departureDate.month)}'
+                : '';
+
+            return Column(
               children: [
-                const Icon(Icons.arrow_back, color: Colors.white, size: 30),
+                SizedBox(height: height * 0.02),
 
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      "NZ",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
+                    const Icon(Icons.arrow_back, color: Colors.white, size: 30),
 
-                    Stack(
-                      alignment: Alignment.center,
+                    Row(
                       children: [
-                        Image.asset(
-                          "assets/images/line.png",
-                          width: 80,
-                          height: 24,
+                        Text(
+                          "$departureCode",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                        Image.asset(
-                          "assets/images/aeroplane_icon.png",
-                          width: 20,
-                          height: 20,
+
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Image.asset(
+                              "assets/images/line.png",
+                              width: 80,
+                              height: 24,
+                            ),
+                            Image.asset(
+                              "assets/images/aeroplane_icon.png",
+                              width: 20,
+                              height: 20,
+                            ),
+                          ],
+                        ),
+
+                        Text(
+                          "$arrivalCode",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ],
                     ),
 
-                    const Text(
-                      "CAI",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                      ),
+                    Image.asset(
+                      "assets/images/edit_icon.png",
+                      width: 24,
+                      height: 24,
                     ),
                   ],
                 ),
 
-                Image.asset(
-                  "assets/images/edit_icon.png",
-                  width: 24,
-                  height: 24,
+                SizedBox(height: height * 0.013),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      dateText,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+
+                    Container(
+                      width: 1,
+                      height: 12,
+                      color: Colors.white,
+                      margin: const EdgeInsets.symmetric(horizontal: 8),
+                    ),
+
+                    const Text(
+                      "2 Travellers",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+
+                    Container(
+                      width: 1,
+                      height: 12,
+                      color: Colors.white,
+                      margin: const EdgeInsets.symmetric(horizontal: 8),
+                    ),
+
+                    Text(
+                      '${provider.flights.length} Flights',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
                 ),
               ],
-            ),
-
-            SizedBox(height: height * 0.013),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  "17 October",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-
-                Container(
-                  width: 1,
-                  height: 12,
-                  color: Colors.white,
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                ),
-
-                const Text(
-                  "2 Travellers",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-
-                Container(
-                  width: 1,
-                  height: 12,
-                  color: Colors.white,
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                ),
-
-                const Text(
-                  "25 Flights",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
-            ),
-          ],
+            );
+          },
         ),
       ),
 
-      body: ListView.builder(
-        itemCount: airlineIcons.length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: FlightCard(airlineIcon: airlineIcons[index]),
+      body: Consumer<FlightProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (provider.errorMessage != null) {
+            return Center(child: Text(provider.errorMessage!));
+          }
+
+          if (provider.flights.isEmpty) {
+            return const Center(child: Text('No flights available'));
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.only(bottom: 100),
+            itemCount: provider.flights.length,
+            itemBuilder: (context, index) {
+              final flight = provider.flights[index];
+
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: FlightCard(flight: flight),
+              );
+            },
           );
         },
       ),

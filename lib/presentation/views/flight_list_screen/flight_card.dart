@@ -1,13 +1,38 @@
+import 'package:flight_test_app/data/models/flight_trip_model.dart';
 import 'package:flight_test_app/presentation/views/flight_list_screen/flight_details_row.dart';
 import 'package:flutter/material.dart';
 
 class FlightCard extends StatelessWidget {
-  final String airlineIcon;
+  final FlightTripModel flight;
 
-  const FlightCard({super.key, required this.airlineIcon});
+  const FlightCard({super.key, required this.flight});
+
+  String _formatTime(String dateTime) {
+    final parsed = DateTime.tryParse(dateTime);
+
+    if (parsed == null) {
+      return dateTime;
+    }
+
+    return '${parsed.hour.toString().padLeft(2, '0')}:'
+        '${parsed.minute.toString().padLeft(2, '0')}';
+  }
 
   @override
   Widget build(BuildContext context) {
+    final flightItem = flight.flightJourneys.first.flightItems.first;
+    final airlineCode = flightItem.flightInfo.code;
+
+    final airlineLogoUrl =
+        'https://souqsafaraiweb.caxita.ca/AirlineIcons/$airlineCode.svg';
+
+    final returnFlightItem = flight.flightJourneys[1].flightItems.first;
+
+    final returnAirlineCode = returnFlightItem.flightInfo.code;
+
+    final returnAirlineLogoUrl =
+        'https://souqsafaraiweb.caxita.ca/AirlineIcons/$returnAirlineCode.svg';
+
     return Container(
       width: 350,
       height: 250,
@@ -35,25 +60,37 @@ class FlightCard extends StatelessWidget {
                 child: Column(
                   children: [
                     FlightDetailRow(
-                      airlineIcon: airlineIcon,
-                      departureTime: "21:30",
-                      departureCode: "DXB",
-                      stopCode: "RUH",
-                      duration: "06H:0M",
-                      arrivalTime: "08:30",
-                      arrivalCode: "CAI",
+                      airlineIcon: airlineLogoUrl,
+                      airlineName: flightItem.flightInfo.nameEn,
+                      flightNumber: flightItem.flightInfo.number,
+                      departureTime: _formatTime(flightItem.departure.dateTime),
+                      departureCode: flightItem.departure.airportCode,
+                      stopCode: flightItem.arrival.airportCode,
+                      duration:
+                          "${flight.flightJourneys[0].journeyTime.hours}H:"
+                          "${flight.flightJourneys[0].journeyTime.minutes}M",
+                      arrivalTime: _formatTime(flightItem.arrival.dateTime),
+                      arrivalCode: flightItem.arrival.airportCode,
                     ),
 
                     const SizedBox(height: 19),
 
                     FlightDetailRow(
-                      airlineIcon: airlineIcon,
-                      departureTime: "21:30",
-                      departureCode: "DXB",
-                      stopCode: "RUH",
-                      duration: "06H:0M",
-                      arrivalTime: "08:30",
-                      arrivalCode: "CAI",
+                      airlineIcon: returnAirlineLogoUrl,
+                      airlineName: returnFlightItem.flightInfo.nameEn,
+                      flightNumber: returnFlightItem.flightInfo.number,
+                      departureTime: _formatTime(
+                        returnFlightItem.departure.dateTime,
+                      ),
+                      departureCode: returnFlightItem.departure.airportCode,
+                      stopCode: returnFlightItem.arrival.airportCode,
+                      duration:
+                          "${flight.flightJourneys[1].journeyTime.hours}H:"
+                          "${flight.flightJourneys[1].journeyTime.minutes}M",
+                      arrivalTime: _formatTime(
+                        returnFlightItem.arrival.dateTime,
+                      ),
+                      arrivalCode: returnFlightItem.arrival.airportCode,
                     ),
                   ],
                 ),
@@ -68,7 +105,7 @@ class FlightCard extends StatelessWidget {
               ),
 
               // PRICE
-              const Positioned(
+              Positioned(
                 left: 25,
                 right: 25,
                 bottom: 0,
@@ -85,7 +122,7 @@ class FlightCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'EGP 596.230',
+                      '${flight.fareDetails.currency} ${flight.fareDetails.total}',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
