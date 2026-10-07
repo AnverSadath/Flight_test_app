@@ -1,5 +1,6 @@
-import 'package:flight_test_app/presentation/flight_list_screen/flight_list_screen.dart';
+import 'package:flight_test_app/presentation/views/flight_list_screen/flight_list_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -31,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
               padding: const EdgeInsets.only(left: 20),
               child: Text(
                 "DISCOVER THE \nWORLD WITH THE \nBEST FLIGHTS",
-                style: TextStyle(
+                style: GoogleFonts.roboto(
                   fontSize: 36,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
