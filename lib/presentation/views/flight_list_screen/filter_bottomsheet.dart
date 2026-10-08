@@ -1,4 +1,6 @@
+import 'package:flight_test_app/presentation/views/providers/flight_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FilterBottomSheet extends StatefulWidget {
   const FilterBottomSheet({super.key});
@@ -8,22 +10,7 @@ class FilterBottomSheet extends StatefulWidget {
 }
 
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
-  final List<String> airlines = [
-    'Jazeera Airways',
-    'Kuwait Airways',
-    'Fly Dubai',
-    'Saudi Arabian Airlines',
-    'Qatar Airways',
-    'Emirates Airlines',
-    'Royal Jordanian',
-    'Gulf Air Company',
-    'Turkish Airlines',
-    'Egyptair',
-    'Etihad Airways',
-    'Middle East Airlines',
-  ];
-
-  final Set<int> selectedAirlines = {};
+  final Set<String> selectedAirlines = {};
 
   void _reset() {
     setState(() {
@@ -40,6 +27,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    final airlines = context.watch<FlightProvider>().airlines;
 
     return Container(
       height: height * 0.69,
@@ -108,7 +96,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   padding: EdgeInsets.zero,
                   itemCount: airlines.length,
                   itemBuilder: (context, index) {
-                    final isSelected = selectedAirlines.contains(index);
+                    final isSelected = selectedAirlines.contains(
+                      airlines[index],
+                    );
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(
@@ -136,9 +126,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                               onChanged: (value) {
                                 setState(() {
                                   if (value == true) {
-                                    selectedAirlines.add(index);
+                                    selectedAirlines.add(airlines[index]);
                                   } else {
-                                    selectedAirlines.remove(index);
+                                    selectedAirlines.remove(airlines[index]);
                                   }
                                 });
                               },
@@ -174,6 +164,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       child: _bottomButton(
                         text: 'Done',
                         onTap: () {
+                          context.read<FlightProvider>().filterByAirlines(
+                            selectedAirlines,
+                          );
                           Navigator.pop(context);
                         },
                       ),

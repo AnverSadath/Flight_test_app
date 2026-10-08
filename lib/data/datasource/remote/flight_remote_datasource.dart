@@ -15,15 +15,9 @@ class FlightRemoteDataSource {
       final response = await client.get(Uri.parse(apiUrl));
 
       if (response.statusCode == 200) {
-        print('API Response:');
-        print(response.body);
-
         final jsonData = jsonDecode(response.body);
 
         final flightResponse = FlightResponseModel.fromJson(jsonData);
-
-        print('API ResultCount: ${flightResponse.data.resultCount}');
-        print('API FlightTrips: ${flightResponse.data.flightTrips.length}');
 
         return flightResponse;
       } else {

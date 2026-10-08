@@ -115,7 +115,6 @@ class FlightDetailRow extends StatelessWidget {
                   ),
                 ),
               ),
-
               SizedBox(
                 width: 105,
                 height: 24,

@@ -1,4 +1,6 @@
+import 'package:flight_test_app/presentation/views/providers/flight_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SortBottomSheet extends StatefulWidget {
   const SortBottomSheet({super.key});
@@ -15,10 +17,25 @@ class _SortBottomSheetState extends State<SortBottomSheet> {
   bool ascending = true;
 
   void _reset() {
+    context.read<FlightProvider>().resetSort();
+    Navigator.pop(context);
+  }
+
+  void _selectSort(int index, bool isAscending) {
     setState(() {
-      selectedIndex = null;
-      ascending = true;
+      selectedIndex = index;
+      ascending = isAscending;
     });
+  }
+
+  void _applySort() {
+    if (selectedIndex != null) {
+      final provider = context.read<FlightProvider>();
+
+      provider.sortFlights(options[selectedIndex!], ascending);
+    }
+
+    Navigator.pop(context);
   }
 
   @override
@@ -76,12 +93,30 @@ class _SortBottomSheetState extends State<SortBottomSheet> {
                           Row(
                             children: [
                               // Up
-                              Image.asset("assets/images/up_icon.png"),
+                              GestureDetector(
+                                onTap: () {
+                                  _selectSort(index, true);
+                                },
+                                child: Image.asset(
+                                  "assets/images/up_icon.png",
+                                  width: 20,
+                                  height: 20,
+                                ),
+                              ),
 
-                              const SizedBox(width: 5),
+                              const SizedBox(width: 10),
 
                               // Down
-                              Image.asset("assets/images/down_icon.png"),
+                              GestureDetector(
+                                onTap: () {
+                                  _selectSort(index, false);
+                                },
+                                child: Image.asset(
+                                  "assets/images/down_icon.png",
+                                  width: 20,
+                                  height: 20,
+                                ),
+                              ),
                             ],
                           ),
                         ],
@@ -109,12 +144,7 @@ class _SortBottomSheetState extends State<SortBottomSheet> {
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: _bottomButton(
-                        text: 'Done',
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                      ),
+                      child: _bottomButton(text: 'Done', onTap: _applySort),
                     ),
                   ],
                 ),
