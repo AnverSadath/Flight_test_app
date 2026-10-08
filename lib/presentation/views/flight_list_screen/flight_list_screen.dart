@@ -1,7 +1,7 @@
 import 'package:flight_test_app/presentation/views/flight_list_screen/filter_bottomsheet.dart';
 import 'package:flight_test_app/presentation/views/flight_list_screen/flight_card.dart';
 import 'package:flight_test_app/presentation/views/flight_list_screen/sort_bottom_sheet.dart';
-import 'package:flight_test_app/presentation/views/providers/flight_provider.dart';
+import 'package:flight_test_app/presentation/providers/flight_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

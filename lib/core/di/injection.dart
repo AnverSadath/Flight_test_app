@@ -1,6 +1,6 @@
 import 'package:flight_test_app/data/datasource/local/flight_local_datasource.dart';
 import 'package:flight_test_app/data/repositories/flight_repo_impl.dart';
-import 'package:flight_test_app/presentation/views/providers/flight_provider.dart';
+import 'package:flight_test_app/presentation/providers/flight_provider.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:flight_test_app/core/database/database_helper.dart';

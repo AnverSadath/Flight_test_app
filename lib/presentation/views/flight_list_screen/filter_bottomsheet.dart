@@ -1,4 +1,4 @@
-import 'package:flight_test_app/presentation/views/providers/flight_provider.dart';
+import 'package:flight_test_app/presentation/providers/flight_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
